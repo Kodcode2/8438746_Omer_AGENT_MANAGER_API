@@ -17,7 +17,6 @@ namespace Agent_Management_Server.Controllers
         {
             _logger = logger;
         }
-
         [HttpGet(Name = "GetWeatherForecast")]
         public IEnumerable<WeatherForecast> Get()
         {

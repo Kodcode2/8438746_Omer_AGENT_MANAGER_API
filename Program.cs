@@ -1,3 +1,7 @@
+using Agent_Management_Server.Interface;
+using Agent_Management_Server.models;
+using Agent_Management_Server.Service;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -7,6 +11,8 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddScoped<Iservic<Target>, MyServiceTarget>();
+builder.Services.AddScoped<Iservic<Agent>, MyServiceAgent>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

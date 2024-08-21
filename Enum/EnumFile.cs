@@ -1,6 +1,18 @@
 ﻿
-public enum status_enum 
+public enum status_enum_agent 
 {
-    activ,
-    Noactiv
+    Dormant,
+    Active
+}
+public enum status_enum_target
+{    
+    Alive,
+    eliminated        
+}
+public enum status_enum_direction
+{
+    EAST,
+    WEST,
+    NORTH,
+    SOUTH
 }

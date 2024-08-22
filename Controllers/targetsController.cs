@@ -12,6 +12,7 @@ namespace Agent_Management_Server.Controllers
     public class TargetsController : ControllerBase
     {
         private readonly MyServiceTarget _service;
+
         public static List<Target> Targets = new List<Target>();
         public TargetsController(Iservic<Target> service) 
         {
@@ -61,34 +62,16 @@ namespace Agent_Management_Server.Controllers
         [HttpPut("{id}/move")]
         public async Task<IActionResult> Move(int id, [FromBody] status_enum_direction newdirection)
         {
-            var Agent = Targets.FirstOrDefault(x => x.Id == id);
-            if (Agent == null)
+            Target target;
+            try
             {
-                return BadRequest("is id is valid");
+               target =  await _service.MoveTarget(id, newdirection);
             }
-            switch (newdirection)
+            catch (Exception e)
             {
-                case status_enum_direction.WEST:
-                    Console.WriteLine("You chose WEST.");                    
-                    Agent.location.x -= 1;
-                    break;
-                case status_enum_direction.NORTH:
-                    Console.WriteLine("You chose Latte.");
-                    Agent.location.y -= 1;                    
-                    break;
-                case status_enum_direction.SOUTH:
-                    Console.WriteLine("You chose NORTH.");
-                    Agent.location.y +=1;
-                    break;
-                case status_enum_direction.EAST:
-                    Console.WriteLine("You chose EAST.");
-                    Agent.location.x +=1;
-                    break;
-                default:
-                    Console.WriteLine("Unknown coffee type.");
-                    break;
-            }            
-            return Ok(Agent);
+                return BadRequest(e.Message);
+            }                      
+            return Ok(target);
         }
         //הפונקציה הזאת צריכה להיות בסרביס אחר
         //public string decima() 

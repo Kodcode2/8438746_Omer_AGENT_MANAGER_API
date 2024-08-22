@@ -1,4 +1,5 @@
-﻿using Agent_Management_Server.Interface;
+﻿using Agent_Management_Server.Connect;
+using Agent_Management_Server.Interface;
 using Agent_Management_Server.models;
 using Agent_Management_Server.Service;
 
@@ -13,10 +14,14 @@ namespace Agent_Management_Server.Controllers
     public class AgentsController : ControllerBase
     {
         private readonly MyServiceAgent _service;
+        private readonly Mission_Menager_service _service_Mission;
+
+
         public static List<Agent> Agents = new List<Agent>();
-        public AgentsController(Iservic<Agent> service) 
+        public AgentsController(Iservic<Agent> service, Iservic<Mission> _service_Mission) 
         {
             this._service = service as MyServiceAgent;
+            this._service_Mission = _service_Mission as Mission_Menager_service;
         }
 
         [HttpPost]
@@ -36,7 +41,8 @@ namespace Agent_Management_Server.Controllers
         [HttpGet]
         public async Task<IActionResult> Get_Agents()
         {           
-            var res =  await _service.GetAgents();            
+            var res =  await _service.GetAgents();
+            _service_Mission.consoltry();
             return StatusCode(200, res);            
             //return CreatedAtAction(nameof(GetById), new { id = newVehicle.Id, type = "vehicle" }, newVehicle);
         }
@@ -60,34 +66,16 @@ namespace Agent_Management_Server.Controllers
         [HttpPut("{id}/move")]
         public async Task<IActionResult> Move(int id, [FromBody] status_enum_direction newdirection)
         {
-            var Agent = Agents.FirstOrDefault(x => x.AgentId == id);
-            if (Agent == null)
+            Agent agent;
+            try
             {
-                return BadRequest("is id is valid");
+                agent = await _service.MoveTarget(id, newdirection);
             }
-            switch (newdirection)
+            catch (Exception e)
             {
-                case status_enum_direction.WEST:
-                    Console.WriteLine("You chose WEST.");
-                    Agent.location.x -= 1;
-                    break;
-                case status_enum_direction.NORTH:
-                    Console.WriteLine("You chose Latte.");
-                    Agent.location.y -= 1;
-                    break;
-                case status_enum_direction.SOUTH:
-                    Console.WriteLine("You chose NORTH.");
-                    Agent.location.y += 1;
-                    break;
-                case status_enum_direction.EAST:
-                    Console.WriteLine("You chose EAST.");
-                    Agent.location.x += 1;
-                    break;
-                default:
-                    Console.WriteLine("Unknown coffee type.");
-                    break;
+                return BadRequest(e.Message);
             }
-            return Ok(Agent);
+            return Ok(agent);
         }
     }
 }

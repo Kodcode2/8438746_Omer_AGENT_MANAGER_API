@@ -1,5 +1,6 @@
 ﻿
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Agent_Management_Server.models
 {
@@ -11,6 +12,9 @@ namespace Agent_Management_Server.models
        public string? direction { get; set; }
         public string? candidate { get; set; }
         public status_enum_target status { get; set; }
-       public Location location { get; set; }
+        [NotMapped]
+        public Location? location { get; set; }
+        public int? locationY { get; set; }
+        public int? locationX { get; set; }
     }
 }

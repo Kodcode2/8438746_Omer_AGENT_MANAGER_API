@@ -7,7 +7,7 @@ using Agent_Management_Server.Controllers;
 
 namespace Agent_Management_Server.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     public class TargetsController : ControllerBase
     {
@@ -20,7 +20,7 @@ namespace Agent_Management_Server.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateAgents([FromBody] Target newTarget)
+        public async Task<IActionResult> CreateTargets([FromBody] Target newTarget)
         {
             if (newTarget == null)
             {
@@ -29,7 +29,7 @@ namespace Agent_Management_Server.Controllers
             
             await _service.AddNewTarget(newTarget);
             
-            return StatusCode(201);// i need to reyren id new
+            return StatusCode(201,new {id = newTarget.Id });// i need to reyren id new
             //return CreatedAtAction(nameof(GetById), new { id = newVehicle.Id, type = "vehicle" }, newVehicle);
         }
         [HttpGet]
@@ -60,12 +60,12 @@ namespace Agent_Management_Server.Controllers
 
 
         [HttpPut("{id}/move")]
-        public async Task<IActionResult> Move(int id, [FromBody] status_enum_direction newdirection)
+        public async Task<IActionResult> Move(int id, [FromBody] Dictionary<string, string> dirction)
         {
             Target target;
             try
             {
-               target =  await _service.MoveTarget(id, newdirection);
+               target =  await _service.MoveTarget(id, dirction["direction"]);
             }
             catch (Exception e)
             {

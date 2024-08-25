@@ -1,18 +1,29 @@
 ﻿
+using Agent_Management_Server.models;
+
 public enum status_enum_agent 
 {
     Dormant,
+    busy,
     Active
 }
 public enum status_enum_target
 {    
     Alive,
-    eliminated        
+    eliminated,
+    busy
 }
 public enum status_enum_direction
 {
-    EAST,
-    WEST,
-    NORTH,
-    SOUTH
+     
+     n,
+    ne,
+    nw,
+    w,
+    e,
+    s,
+    sw,
+    se
+
 }
+

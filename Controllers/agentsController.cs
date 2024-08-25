@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Agent_Management_Server.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     public class AgentsController : ControllerBase
     {
@@ -33,7 +33,7 @@ namespace Agent_Management_Server.Controllers
             }            
             await _service.AddNewAgent(newAgent);
             
-            return Ok();//צריך להחזיר את ID שנוצר
+            return StatusCode(201 , new { id = newAgent.AgentId }) ;//צריך להחזיר את ID שנוצר
             //return CreatedAtAction(nameof(GetById), new { id = newVehicle.Id, type = "vehicle" }, newVehicle);
         }
 
@@ -42,7 +42,7 @@ namespace Agent_Management_Server.Controllers
         public async Task<IActionResult> Get_Agents()
         {           
             var res =  await _service.GetAgents();
-            _service_Mission.consoltry();
+            
             return StatusCode(200, res);            
             //return CreatedAtAction(nameof(GetById), new { id = newVehicle.Id, type = "vehicle" }, newVehicle);
         }
@@ -53,7 +53,7 @@ namespace Agent_Management_Server.Controllers
         {
             try 
             {
-                _service.PutPinAgent(id, Startlocation);
+                await _service.PutPinAgent(id, Startlocation);
             }
             catch (Exception e)
             {
@@ -64,12 +64,12 @@ namespace Agent_Management_Server.Controllers
 
 
         [HttpPut("{id}/move")]
-        public async Task<IActionResult> Move(int id, [FromBody] status_enum_direction newdirection)
+        public async Task<IActionResult> Move(int id, [FromBody] Dictionary<string, string> dirction)
         {
             Agent agent;
             try
             {
-                agent = await _service.MoveTarget(id, newdirection);
+                agent = await _service.MoveTarget(id, dirction["direction"]);
             }
             catch (Exception e)
             {

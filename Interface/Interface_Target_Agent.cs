@@ -2,6 +2,6 @@
 {
     public interface Interface_Target_Agent
     {       
-        public string Name { get; set; }          
+        public string name { get; set; }          
     }
 }

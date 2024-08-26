@@ -65,7 +65,7 @@ namespace Agent_Management_Server.Service
         public async Task<Agent> Moveagent(int id,string newdirection)
         {
             var agent = _DBcontext.Agents.FirstOrDefault(x => x.AgentId == id);
-            if (agent == null || agent.status != status_enum_agent.Active)
+            if (agent == null || agent.status == status_enum_agent.Active)
             {
                 throw new Exception("no id is valid");
             }
@@ -76,6 +76,14 @@ namespace Agent_Management_Server.Service
                 agent.locationY += res.y;
             }           
             await _DBcontext.SaveChangesAsync();
+            try
+            {
+                _service_Mission.Get_options_agent(agent);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
             return agent;
         }
     }

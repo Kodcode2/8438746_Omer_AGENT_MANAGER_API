@@ -53,27 +53,32 @@ namespace Agent_Management_Server.Service
             }
             var option = this._dbcontext.Targets.ToList();          
             foreach (var target in option) 
-            {                           
-                    var res = Math.Sqrt(Math.Pow(target.locationX - agent.locationX, 2) + Math.Pow(target.locationY - agent.locationY, 2));
-                    Console.WriteLine(res);
-                    double restime = res / 5;
-                    int timeremaining = (int)restime;
-                    if (res <= 200 ) 
-                    // יוצר כרטיס משימה->
+            {
+                    var r = _dbcontext.Mission.FirstOrDefault(a => a.targetID == target.Id && a.agentID == agent.AgentId);
+                    if (r == null)
                     {
-                        Mission mission = new Mission()
-                            {
-                                agentID = agent.AgentId,
-                                targetID = target.Id,
-                                Timeremaining = timeremaining,
-                                status = status_enum_mission.Waiting_for_the_command
-                            };
-                        this._dbcontext.Mission.Add(mission);
-                        target.status = status_enum_target.busy;
-                        _dbcontext.Targets.Update(target);
-                        agent.status = status_enum_agent.busy;
-                        _dbcontext.Agents.Update(agent);
-                    }                    
+                        var res = Math.Sqrt(Math.Pow(target.locationX - agent.locationX, 2) + Math.Pow(target.locationY - agent.locationY, 2));
+                        Console.WriteLine(res);
+                        double restime = res / 5;
+                        int timeremaining = (int)restime;
+                        if (res <= 200 ) 
+                        // יוצר כרטיס משימה->
+                        {
+                            Mission mission = new Mission()
+                                {
+                                    agentID = agent.AgentId,
+                                    targetID = target.Id,
+                                    Timeremaining = timeremaining,
+                                    status = status_enum_mission.Waiting_for_the_command
+                                };
+                            this._dbcontext.Mission.Add(mission);
+                            target.status = status_enum_target.busy;
+                            _dbcontext.Targets.Update(target);
+                            agent.status = status_enum_agent.busy;
+                            _dbcontext.Agents.Update(agent);
+                        }                   
+                        
+                    }
             }
             _dbcontext.SaveChanges();        
         }

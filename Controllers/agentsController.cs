@@ -2,7 +2,6 @@
 using Agent_Management_Server.Interface;
 using Agent_Management_Server.models;
 using Agent_Management_Server.Service;
-
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -31,20 +30,16 @@ namespace Agent_Management_Server.Controllers
             {
                 return BadRequest("Vehicle data is null");
             }            
-            await _service.AddNewAgent(newAgent);
-            
-            return StatusCode(201 , new { id = newAgent.AgentId }) ;//צריך להחזיר את ID שנוצר
-            //return CreatedAtAction(nameof(GetById), new { id = newVehicle.Id, type = "vehicle" }, newVehicle);
+            await _service.AddNewAgent(newAgent);            
+            return StatusCode(201 , new { id = newAgent.AgentId }) ;            
         }
 
 
         [HttpGet]
         public async Task<IActionResult> Get_Agents()
         {           
-            var res =  await _service.GetAgents();
-            
-            return StatusCode(200, res);            
-            //return CreatedAtAction(nameof(GetById), new { id = newVehicle.Id, type = "vehicle" }, newVehicle);
+            var res =  await _service.GetAgents();            
+            return StatusCode(200, res);                  
         }
 
 
@@ -69,7 +64,7 @@ namespace Agent_Management_Server.Controllers
             Agent agent;
             try
             {
-                agent = await _service.MoveTarget(id, dirction["direction"]);
+                agent = await _service.Moveagent(id, dirction["direction"]);
             }
             catch (Exception e)
             {

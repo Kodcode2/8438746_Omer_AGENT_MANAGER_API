@@ -25,21 +25,18 @@ namespace Agent_Management_Server.Controllers
             if (newTarget == null)
             {
                 return BadRequest("Vehicle data is null");
-            }     
-            
-            await _service.AddNewTarget(newTarget);
-            
-            return StatusCode(201,new {id = newTarget.Id });// i need to reyren id new
-            //return CreatedAtAction(nameof(GetById), new { id = newVehicle.Id, type = "vehicle" }, newVehicle);
+            }                 
+            await _service.AddNewTarget(newTarget);            
+            return StatusCode(201,new {id = newTarget.Id });            
         }
+
+
         [HttpGet]
         public async Task<IActionResult> GetTargets()
         {
-            //return _DBcontext._Vehicles.ToList();
+            //return _DBcontext->Targets.ToList();
             var res =  await _service.GetTargets();
-            return StatusCode(200, res);
-            //Vehicles.Add(newVehicle);
-            //return CreatedAtAction(nameof(GetById), new { id = newVehicle.Id, type = "vehicle" }, newVehicle);
+            return StatusCode(200, res);            
         }
         
         [HttpPut("{id}/pin")]
@@ -73,17 +70,5 @@ namespace Agent_Management_Server.Controllers
             }                      
             return Ok(target);
         }
-        //הפונקציה הזאת צריכה להיות בסרביס אחר
-        //public string decima() 
-        //{
-        //   double t = Math.Sqrt(Math.Pow(x2 - x1, 2) + Math.Pow(y2 - y1, 2))
-        //    return t.ToString();
-        //}
-        //public int dir() 
-        //{
-        //    var gg = decima()
-            
-        //}
-
     }
 }

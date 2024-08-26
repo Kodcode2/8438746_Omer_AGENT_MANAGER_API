@@ -24,6 +24,7 @@ namespace Agent_Management_Server.Controllers
             _service_target = service_target as MyServiceTarget;
             this._dbcontext = dbcontext;
         }
+
         [HttpGet]
         public async Task<IActionResult> Get_aal_mission() 
         {
@@ -34,37 +35,32 @@ namespace Agent_Management_Server.Controllers
 
         [HttpPost("update")]
         public async Task<IActionResult> Run()
-        {
-           
+        {           
             var res_agent =  await _service_agent.GetAgents_active();
-            var resM =  _dbcontext.Mission.ToList();
-            foreach (var mission in resM) 
+            var resMissions =  _dbcontext.Mission.Where(a=> a.status!= status_enum_mission.false_).ToList();
+            foreach (var mission in resMissions) 
             {
-                Agent res =  _dbcontext.Agents.FirstOrDefault(a => a.AgentId == mission.agentID);
-                Target res2 = _dbcontext.Targets.FirstOrDefault(a => a.Id == mission.targetID);
-                var re = _service_Mission.Culculet_to_target(res, res2);
+                Agent? responsforAgent =  _dbcontext.Agents.FirstOrDefault(a => a.AgentId == mission.agentID);
+                Target? resforTarget = _dbcontext.Targets.FirstOrDefault(a => a.Id == mission.targetID);
+                var re = _service_Mission.Culculet_to_target(responsforAgent, resforTarget);
                 if (re != null) 
                 {
-                    res.locationX += re.x;
-                    res.locationY += re.y;
-                    Console.WriteLine($"uuuuuuuuuuuuuuuuu{res.locationX} : {res.locationY} ");
-                    _dbcontext.Update(res);
+                    responsforAgent.locationX += re.x;
+                    responsforAgent.locationY += re.y;
+
+                    Console.WriteLine($"res Changes {responsforAgent.locationX} : {responsforAgent.locationY} ");
+                    if (_service_Mission.The_target_was_eliminated(responsforAgent, resforTarget))
+                        {
+                            Console.WriteLine("boom");
+                            mission.status = status_enum_mission.false_;
+                            _dbcontext.Update(mission);
+                        }
+
+                    _dbcontext.Update(responsforAgent);
                     _dbcontext.SaveChanges();
                 }
             }
-
-
-            //var res_target = await _service_target.GetTarget_active();
-
-            return new JsonResult(res_agent);
-
-            //שליפה של הסוכנים שיש עליהם משימה לפי הסטוטס שלהם
-            //
-            //חישוב מרחק וכיוון 
-            // ביצוע תזוזוה לכיון המטרה
-            // עדכון זמן חיסול
-          
-            
+            return StatusCode(200);           
         }
 
     }

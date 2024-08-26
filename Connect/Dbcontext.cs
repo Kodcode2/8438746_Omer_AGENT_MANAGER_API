@@ -11,17 +11,9 @@ namespace Agent_Management_Server.Connect
             Database.EnsureCreated();
 
         }
-
         public DbSet<Target> Targets { get; set; }
         public DbSet<Agent> Agents { get; set; }
         public DbSet<Mission> Mission { get; set; }
-        //private static DbContextOptions Getoptions(string connectionString)
-        //{
-        //    return SqlServerDbContextOptionsExtensions.UseSqlServer(new
-        //        DbContextOptionsBuilder(), connectionString).Options;
-        //}       
-
-
         }
     }
 

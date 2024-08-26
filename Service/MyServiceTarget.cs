@@ -31,17 +31,12 @@ namespace Agent_Management_Server.Service
         public async Task<List<Target>> GetTarget_active()
         {
             //  חיבור לDB בקשה לקבלה מה טבלה מה
-            return _dbcontext.Targets.Where(a => a.status == status_enum_target.busy).ToList();
-            //return Agents;
-        }
-        //public Target GetTargetById(int id)
-        //{
-        //    return Targets.FirstOrDefault(x => x.Id == id);
-        //}
+            return _dbcontext.Targets.Where(a => a.status == status_enum_target.busy).ToList();        
+        }        
         public async Task<Target> PutPinTarget(int id, Location Startlocation)
         {
             var target = _dbcontext.Targets.FirstOrDefault(x => x.Id == id);
-            if (target != null)
+            if (target != null )
             {
                 Location location_ = new Location()
                 {
@@ -73,60 +68,9 @@ namespace Agent_Management_Server.Service
             {
                 target.locationX += res.x;
                 target.locationY += res.y;
-            }
-            //switch (newdirection)
-            //{
-            //    case status_enum_direction.nw:
-            //        Console.WriteLine("You chose WEST.");
-            //        target.locationX -= 1; 
-            //        target.locationY -= 1;
-
-            //        break;
-            //    case status_enum_direction.n:
-            //        Console.WriteLine("You chose Latte.");
-            //        target.locationX += 0;
-            //        target.locationY -= 1;
-            //        break;
-            //    case status_enum_direction.ne:
-            //        Console.WriteLine("You chose NORTH.");
-            //        target.locationX += 1;
-            //        target.locationY -= 1;
-            //        break;
-            //    case status_enum_direction.w:
-            //        Console.WriteLine("You chose EAST.");
-            //        target.locationX -= 1;
-            //        target.locationY += 0;
-            //        break;
-            // case status_enum_direction.e:
-            //        Console.WriteLine("You chose EAST.");
-            //        target.locationX += 1;
-            //        target.locationY += 0;
-            //        break;
-            // case status_enum_direction.s:
-            //        Console.WriteLine("You chose EAST.");
-            //        target.locationX -= 0;
-            //        target.locationY += 1;
-            //        break;
-            // case status_enum_direction.sw:
-            //        Console.WriteLine("You chose EAST.");
-            //        target.locationX -= 1;
-            //        target.locationY += 1;
-            //        break;
-            // case status_enum_direction.se:
-            //        Console.WriteLine("You chose EAST.");
-            //        target.locationX += 1;
-            //        target.locationY += 1;
-            //        break;
-            //    default:
-            //        Console.WriteLine("Unknown  type.");
-            //        break;
-            //} 
-            await _dbcontext.SaveChangesAsync();
-            
-            return target;           
-            
+            }            
+            await _dbcontext.SaveChangesAsync();            
+            return target;                 
         }
-
-
     }
 }

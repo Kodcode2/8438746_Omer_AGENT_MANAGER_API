@@ -26,4 +26,10 @@ public enum status_enum_direction
     se
 
 }
+public enum status_enum_mission
+{
+    Active,
+    Waiting_for_the_command,
+    false_
+}
 

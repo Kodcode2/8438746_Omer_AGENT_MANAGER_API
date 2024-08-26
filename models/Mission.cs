@@ -9,5 +9,7 @@ namespace Agent_Management_Server.models
         public int  targetID {  get; set; }
         public int agentID { get; set; }
         public int Timeremaining { get; set; }
+
+        public status_enum_mission? status { get; set; }
     }
 }

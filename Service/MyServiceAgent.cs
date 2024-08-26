@@ -37,32 +37,35 @@ namespace Agent_Management_Server.Service
            return   _DBcontext.Agents.Where(a => a.status == status_enum_agent.busy).ToList();
             //return Agents;
         }
-        //public Agent GetAgentById(int id)
-        //{
-        //    return Agents.FirstOrDefault(x => x.AgentId == id);
-        //}
         public async Task<Agent> PutPinAgent(int id, Location Startlocation)
         {
             var agent = _DBcontext.Agents.FirstOrDefault(x => x.AgentId == id);
-            if (agent != null)
+            if (agent != null || agent.status != status_enum_agent.Active)
             {
                 agent.locationY = Startlocation.y;
                 agent.locationX = Startlocation.x;
                 Location location_ = new Location() { y = Startlocation.y,x = Startlocation.x };
                 agent.location = location_;
                 await _DBcontext.SaveChangesAsync();
-                _service_Mission.Get_options_agent(agent);
+                try 
+                {
+                    _service_Mission.Get_options_agent(agent);
+                }
+                catch (Exception e )
+                {
+                    Console.WriteLine(e.Message);
+                }                
             }
             else
             {
-                throw new Exception("no id is valid");
+                throw new Exception("no id is valid or this olredy");
             }
             return agent;
         }
-        public async Task<Agent> MoveTarget(int id,string newdirection)
+        public async Task<Agent> Moveagent(int id,string newdirection)
         {
             var agent = _DBcontext.Agents.FirstOrDefault(x => x.AgentId == id);
-            if (agent == null)
+            if (agent == null || agent.status != status_enum_agent.Active)
             {
                 throw new Exception("no id is valid");
             }
@@ -71,58 +74,9 @@ namespace Agent_Management_Server.Service
             {
                 agent.locationX += res.x;
                 agent.locationY += res.y;
-            }
-            //switch (dirction)
-            //{
-            //    case status_enum_direction.nw:
-            //        Console.WriteLine("You chose WEST.");
-            //        agent.locationX -= 1;
-            //        agent.locationY -= 1;
-
-            //        break;
-            //    case status_enum_direction.n:
-            //        Console.WriteLine("You chose Latte.");
-            //        agent.locationX += 0;
-            //        agent.locationY -= 1;
-            //        break;
-            //    case status_enum_direction.ne:
-            //        Console.WriteLine("You chose NORTH.");
-            //        agent.locationX += 1;
-            //        agent.locationY -= 1;
-            //        break;
-            //    case status_enum_direction.w:
-            //        Console.WriteLine("You chose EAST.");
-            //        agent.locationX -= 1;
-            //        agent.locationY += 0;
-            //        break;
-            //    case status_enum_direction.e:
-            //        Console.WriteLine("You chose EAST.");
-            //        agent.locationX += 1;
-            //        agent.locationY += 0;
-            //        break;
-            //    case status_enum_direction.s:
-            //        Console.WriteLine("You chose EAST.");
-            //        agent.locationX -= 0;
-            //        agent.locationY += 1;
-            //        break;
-            //    case status_enum_direction.sw:
-            //        Console.WriteLine("You chose EAST.");
-            //        agent.locationX -= 1;
-            //        agent.locationY += 1;
-            //        break;
-            //    case status_enum_direction.se:
-            //        Console.WriteLine("You chose EAST.");
-            //        agent.locationX += 1;
-            //        agent.locationY += 1;
-            //        break;
-            //    default:
-            //        Console.WriteLine("Unknown  type.");
-            //        break;
-            //}
+            }           
             await _DBcontext.SaveChangesAsync();
             return agent;
-
-
         }
     }
 }

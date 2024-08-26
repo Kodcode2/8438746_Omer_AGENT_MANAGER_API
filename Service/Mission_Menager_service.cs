@@ -44,9 +44,9 @@ namespace Agent_Management_Server.Service
         }
 
         //  הפונקציה שיוצרת כרטיס משימות עבור הסוכנים הרלוונטים-> 
-        public async void Get_options_agent(Agent agent) 
+        public async void Get_options_agent(Agent agent)
         {
-            if (agent.status == status_enum_agent.Active)
+            if (agent.status == status_enum_agent.Active )
             {
                 Console.WriteLine("agent alredy");
                 throw new Exception("agent alredy");
@@ -66,6 +66,7 @@ namespace Agent_Management_Server.Service
                                 agentID = agent.AgentId,
                                 targetID = target.Id,
                                 Timeremaining = timeremaining,
+                                status = status_enum_mission.Waiting_for_the_command
                             };
                         this._dbcontext.Mission.Add(mission);
                         target.status = status_enum_target.busy;
@@ -102,7 +103,15 @@ namespace Agent_Management_Server.Service
             double restime = res / 5;
             int timeremaining = (int)restime;
             mission.Timeremaining = timeremaining;
+            if (timeremaining <= 0) 
+            {
+                mission.status = status_enum_mission.false_;
+                agent.status = status_enum_agent.Dormant;
+                target.status = status_enum_target.eliminated;
+            }
             _dbcontext.Update(mission);
+            _dbcontext.Update(agent);
+            _dbcontext.Update(target);
         }
 
         public async void Get_options_target(Target target)
@@ -186,7 +195,29 @@ namespace Agent_Management_Server.Service
             return false;
         }
 
+        public void create_active_mission(int id) 
+        {
+            var resMissions = _dbcontext.Mission.FirstOrDefault(a => a.id == id );
+            resMissions.status = status_enum_mission.Active;
+            _dbcontext.Update(resMissions);
+            _dbcontext.SaveChanges();
 
+            var agent = _dbcontext.Agents.FirstOrDefault(a => a.AgentId == resMissions.agentID);
+            if (agent != null) 
+            {
+                agent.status = status_enum_agent.Active;
+                _dbcontext.Update(agent);
+                _dbcontext.SaveChanges();
+            }
+            var target = _dbcontext.Targets.FirstOrDefault(a => a.Id == resMissions.targetID);
+            if (target != null) 
+            {
+                target.status = status_enum_target.busy;
+                _dbcontext.Update(target);
+                _dbcontext.SaveChanges();
+            }
+            _dbcontext.SaveChanges();
+        }
 
 
 

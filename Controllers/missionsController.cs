@@ -41,6 +41,22 @@ namespace Agent_Management_Server.Controllers
             return StatusCode(200, res);
         }
 
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Create_new_mission_for_active(int id, [FromBody] object obj ) 
+        {
+            try 
+            {
+                 _service_Mission.create_active_mission(id);
+            }
+            catch (Exception e) 
+            {
+                Console.WriteLine(e.Message);
+                return StatusCode(500);
+            }
+            return StatusCode(200);
+        }
+
         // הפונקציה שהיא מזיזה את הסוכנים לכיוון המטרה
          //ןבמקרה של פגיעה היא מעדכנת את הדברים הרלוונטים כמו סטטוסים וכדו
          //היה ניתן להשתמש פה בתור עבור המשימות ובכל פעם להוציא לתרד חדש ....לא עשיתי מפעת הזמן
@@ -48,7 +64,7 @@ namespace Agent_Management_Server.Controllers
         public async Task<IActionResult> Run()
         {           
             var res_agent =  await _service_agent.GetAgents_active();
-            var resMissions =  _dbcontext.Mission.Where(a=> a.status!= status_enum_mission.false_).ToList();
+            var resMissions =  _dbcontext.Mission.Where(a=> a.status== status_enum_mission.Active).ToList();
             foreach (var mission in resMissions) 
             {                 
                 Agent? responsforAgent =  _dbcontext.Agents.FirstOrDefault(a => a.AgentId == mission.agentID);

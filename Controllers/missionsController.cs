@@ -25,37 +25,53 @@ namespace Agent_Management_Server.Controllers
             this._dbcontext = dbcontext;
         }
 
+
+
         [HttpGet]
-        public async Task<IActionResult> Get_aal_mission() 
+        public async Task<IActionResult> Get_aal_mission()
         {
-            var res =  _dbcontext.Mission.ToList();
-            return StatusCode(200 , res);
+            var res = await _service_Mission.GetAllMission();
+            return StatusCode(200, res);
+        }        
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> Get_missionBY_id(int id)
+        {
+            var res = await _service_Mission.Get_Mission_by_id(id);
+            return StatusCode(200, res);
         }
 
-
+        // הפונקציה שהיא מזיזה את הסוכנים לכיוון המטרה
+         //ןבמקרה של פגיעה היא מעדכנת את הדברים הרלוונטים כמו סטטוסים וכדו
+         //היה ניתן להשתמש פה בתור עבור המשימות ובכל פעם להוציא לתרד חדש ....לא עשיתי מפעת הזמן
         [HttpPost("update")]
         public async Task<IActionResult> Run()
         {           
             var res_agent =  await _service_agent.GetAgents_active();
             var resMissions =  _dbcontext.Mission.Where(a=> a.status!= status_enum_mission.false_).ToList();
             foreach (var mission in resMissions) 
-            {
+            {                 
                 Agent? responsforAgent =  _dbcontext.Agents.FirstOrDefault(a => a.AgentId == mission.agentID);
                 Target? resforTarget = _dbcontext.Targets.FirstOrDefault(a => a.Id == mission.targetID);
-                var re = _service_Mission.Culculet_to_target(responsforAgent, resforTarget);
-                if (re != null) 
+                var res =  _service_Mission.Culculet_to_target(responsforAgent, resforTarget);
+                if (res != null) 
                 {
-                    responsforAgent.locationX += re.x;
-                    responsforAgent.locationY += re.y;
-
-                    Console.WriteLine($"res Changes {responsforAgent.locationX} : {responsforAgent.locationY} ");
+                    responsforAgent.locationX += res.x;
+                    responsforAgent.locationY += res.y;
+                    _service_Mission.Culculet_to_Timeremaining(mission, responsforAgent, resforTarget);
+                    Console.WriteLine($"res Changes {responsforAgent.locationX} : {responsforAgent.locationY}");
                     if (_service_Mission.The_target_was_eliminated(responsforAgent, resforTarget))
                         {
                             Console.WriteLine("boom");
                             mission.status = status_enum_mission.false_;
+                            resforTarget.status = status_enum_target.eliminated;
+                            responsforAgent.Amount_of_eliminations += 1;
+                            responsforAgent.status = status_enum_agent.Dormant;
                             _dbcontext.Update(mission);
-                        }
-
+                            _dbcontext.Update(resforTarget);
+                            _dbcontext.Update(responsforAgent);
+                            _dbcontext.SaveChanges();
+                    }
                     _dbcontext.Update(responsforAgent);
                     _dbcontext.SaveChanges();
                 }
@@ -63,5 +79,37 @@ namespace Agent_Management_Server.Controllers
             return StatusCode(200);           
         }
 
+
+        [HttpGet("get_Missions")]
+        public async Task<IActionResult> Get_aal_mission_for_view()
+        {
+            var res = _service_Mission.createModelMissin();
+            if (res != null) 
+            {
+                return StatusCode(200,res);
+            }
+            return StatusCode(400);
+        }
+
+        [HttpGet("general")]
+        public async Task<IActionResult> Get_aal_mission_general() 
+        {
+            int Sum_all_agent = _service_Mission.Sum_all_agent();
+            int Sum_all_agent_active = _service_Mission.Sum_all_agent_active();
+            int Sum_all_mission_false = _service_Mission.Sum_all_mission_false();
+            int Sum_all_mission = _service_Mission.Sum_all_mission();
+            int Sum_all_Targe = _service_Mission.Sum_all_Target();
+            int Sum_all_Target_eliminated = _service_Mission.Sum_all_Target_eliminated();
+            return StatusCode(200 , new
+            {
+                Sum_all_agent = Sum_all_agent,
+                Sum_all_agent_active = Sum_all_agent_active,
+                Sum_all_mission_false = Sum_all_mission_false,
+                Sum_all_mission = Sum_all_mission,
+                Sum_all_Targe = Sum_all_Targe,
+                Sum_all_Target_eliminated = Sum_all_Target_eliminated
+            });
+
+        }
     }
 }

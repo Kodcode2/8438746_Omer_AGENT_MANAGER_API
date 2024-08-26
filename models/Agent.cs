@@ -16,5 +16,6 @@ namespace Agent_Management_Server.models
 
         public int locationY {  get; set; }
         public int locationX {  get; set; }
+        public int Amount_of_eliminations { get; set; }
     }
 }

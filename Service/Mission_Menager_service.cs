@@ -3,6 +3,7 @@ using Agent_Management_Server.Interface;
 using Agent_Management_Server.models;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace Agent_Management_Server.Service
 {
@@ -24,8 +25,25 @@ namespace Agent_Management_Server.Service
         public Mission_Menager_service(Dbcontext dbcontext)
         {
             this._dbcontext = dbcontext;
-        }           
+        }
 
+
+
+        public async Task<List<Mission>> GetAllMission()
+        {
+            //  חיבור לDB בקשה לקבלה מה טבלה מה
+            return await _dbcontext.Mission.ToListAsync();
+            //return Mission;
+        }
+        public async Task<Mission> Get_Mission_by_id(int id)
+        {
+            var res = await _dbcontext.Mission.FirstOrDefaultAsync(a => a.agentID == id);
+            //  חיבור לDB בקשה לקבלה מה טבלה מה
+            return res;
+            //return Mission by id;
+        }
+
+        //  הפונקציה שיוצרת כרטיס משימות עבור הסוכנים הרלוונטים-> 
         public async void Get_options_agent(Agent agent) 
         {
             if (agent.status == status_enum_agent.Active)
@@ -40,7 +58,8 @@ namespace Agent_Management_Server.Service
                     Console.WriteLine(res);
                     double restime = res / 5;
                     int timeremaining = (int)restime;
-                    if (res <= 35 ) 
+                    if (res <= 200 ) 
+                    // יוצר כרטיס משימה->
                     {
                         Mission mission = new Mission()
                             {
@@ -56,6 +75,34 @@ namespace Agent_Management_Server.Service
                     }                    
             }
             _dbcontext.SaveChanges();        
+        }
+
+        public List<ModelMissin> createModelMissin() 
+        {
+            List<ModelMissin> modelMissins = new List<ModelMissin>();
+            var resMissions = _dbcontext.Mission.Where(a => a.status != status_enum_mission.false_).ToList();
+            foreach (var mission in resMissions)
+            {
+                Agent? responsforAgent = _dbcontext.Agents.FirstOrDefault(a => a.AgentId == mission.agentID);
+                Target? resforTarget = _dbcontext.Targets.FirstOrDefault(a => a.Id == mission.targetID);
+                ModelMissin modelMissin = new ModelMissin()
+                {
+                    mission = mission,
+                    agent = responsforAgent,
+                    target = resforTarget
+                };
+                modelMissins.Add(modelMissin);
+            }
+            return modelMissins;
+        }
+        public void Culculet_to_Timeremaining(Mission mission , Agent agent, Target target)
+        {
+            var res = Math.Sqrt(Math.Pow(target.locationX - agent.locationX, 2) + Math.Pow(target.locationY - agent.locationY, 2));
+            Console.WriteLine(res);
+            double restime = res / 5;
+            int timeremaining = (int)restime;
+            mission.Timeremaining = timeremaining;
+            _dbcontext.Update(mission);
         }
 
         public async void Get_options_target(Target target)
@@ -137,6 +184,49 @@ namespace Agent_Management_Server.Service
                 return true;
             }
             return false;
+        }
+
+
+
+
+
+        //service for genral viwe -> MVC 
+
+        public  int  Sum_all_agent() 
+        {
+            int resAgent = _dbcontext.Agents.ToList().Count;
+            return resAgent;
+            
+        }
+        public int Sum_all_agent_active()
+        {
+            int res_agent_active = _dbcontext.Agents.Where(a => a.status == status_enum_agent.Active).ToList().Count;
+            return res_agent_active;
+        }
+        public int Sum_all_agent_busy()
+        {            
+            int res_agent_busy = _dbcontext.Agents.Where(a => a.status == status_enum_agent.busy).ToList().Count;
+            return res_agent_busy;
+        }
+        public int Sum_all_Target()
+        {
+            int resTarget = _dbcontext.Targets.ToList().Count;
+            return resTarget;
+        }
+        public int Sum_all_Target_eliminated()
+        {
+            int res_Target_eliminated = _dbcontext.Targets.Where(a => a.status == status_enum_target.eliminated).ToList().Count;
+            return res_Target_eliminated;
+        }
+        public int Sum_all_mission()
+        {
+            int resMission = _dbcontext.Mission.ToList().Count;
+            return resMission;
+        }
+        public int Sum_all_mission_false()
+        {
+            int res_Target_eliminated = _dbcontext.Mission.Where(a => a.status == status_enum_mission.false_ ).ToList().Count;
+            return res_Target_eliminated;
         }
     }
 }

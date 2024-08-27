@@ -63,7 +63,6 @@ namespace Agent_Management_Server.Controllers
         [HttpPost("update")]
         public async Task<IActionResult> Run()
         {           
-            var res_agent =  await _service_agent.GetAgents_active();
             var resMissions =  _dbcontext.Mission.Where(a=> a.status== status_enum_mission.Active).ToList();
             foreach (var mission in resMissions) 
             {                 

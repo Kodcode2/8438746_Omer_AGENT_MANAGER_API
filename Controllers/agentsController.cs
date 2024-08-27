@@ -13,14 +13,12 @@ namespace Agent_Management_Server.Controllers
     public class AgentsController : ControllerBase
     {
         private readonly MyServiceAgent _service;
-        private readonly Mission_Menager_service _service_Mission;
-
-
-        public static List<Agent> Agents = new List<Agent>();
-        public AgentsController(Iservic<Agent> service, Iservic<Mission> _service_Mission) 
+        
+        
+        public AgentsController(Iservic<Agent> service) 
         {
             this._service = service as MyServiceAgent;
-            this._service_Mission = _service_Mission as Mission_Menager_service;
+            
         }
 
         [HttpPost]

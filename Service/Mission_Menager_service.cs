@@ -43,7 +43,7 @@ namespace Agent_Management_Server.Service
             //return Mission by id;
         }
 
-        //  הפונקציה שיוצרת כרטיס משימות עבור הסוכנים הרלוונטים-> 
+        //  The function that creates a task card for the relevant agents-> 
         public async void Get_options_agent(Agent agent)
         {
             if (agent.status == status_enum_agent.Active )
@@ -82,7 +82,7 @@ namespace Agent_Management_Server.Service
             }
             _dbcontext.SaveChanges();        
         }
-
+        // CEATE NEW OBGECT FOR VIEW 
         public List<ModelMissin> createModelMissin() 
         {
             List<ModelMissin> modelMissins = new List<ModelMissin>();
@@ -101,6 +101,7 @@ namespace Agent_Management_Server.Service
             }
             return modelMissins;
         }
+        // Time calculation
         public void Culculet_to_Timeremaining(Mission mission , Agent agent, Target target)
         {
             var res = Math.Sqrt(Math.Pow(target.locationX - agent.locationX, 2) + Math.Pow(target.locationY - agent.locationY, 2));
@@ -118,7 +119,7 @@ namespace Agent_Management_Server.Service
             _dbcontext.Update(agent);
             _dbcontext.Update(target);
         }
-
+        // The function that creates a task card for the relevant targets
         public async void Get_options_target(Target target)
         {
             if (target.status  != status_enum_target.busy)
@@ -148,8 +149,8 @@ namespace Agent_Management_Server.Service
                 _dbcontext.SaveChanges();
             }
         }
-
-        public  Location Culculet_to_target(Agent agent , Target target) 
+        // Direction calculation
+        public Location Culculet_to_target(Agent agent , Target target) 
         {
             var distanceX = target.locationX - agent.locationX;
             var distanceY = target.locationY - agent.locationY;
@@ -190,7 +191,7 @@ namespace Agent_Management_Server.Service
                 return My_dict2["non"];
             }
         }
-
+        // Real-time calculation
         public bool The_target_was_eliminated(Agent agent, Target target) 
         {
             if (target.locationX == agent.locationX && agent.locationY == target.locationY) 
@@ -199,7 +200,7 @@ namespace Agent_Management_Server.Service
             }
             return false;
         }
-
+        // Start a task
         public void create_active_mission(int id) 
         {
             var resMissions = _dbcontext.Mission.FirstOrDefault(a => a.id == id );

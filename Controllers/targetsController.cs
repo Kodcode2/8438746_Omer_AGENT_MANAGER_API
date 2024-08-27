@@ -30,7 +30,6 @@ namespace Agent_Management_Server.Controllers
             return StatusCode(201,new {id = newTarget.Id });            
         }
 
-
         [HttpGet]
         public async Task<IActionResult> GetTargets()
         {
